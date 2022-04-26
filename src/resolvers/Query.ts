@@ -8,6 +8,10 @@ interface TransactionFiltersType {
   }
 }
 
+interface TransactionId {
+  transactionId: string
+}
+
 export const Query = {
   accounts: (_: any, __:any, { prisma }: Context) => {
     return prisma.account.findMany({
@@ -29,6 +33,10 @@ export const Query = {
   },
   transactions: (_: any, { filters }: TransactionFiltersType, { prisma }: Context) => {
     let { accountId, startDate, endDate } = filters
+
+    // if (cursor) {
+    //   where.id < cursor
+    // }
 
     return prisma.transaction.findMany({
       take: 10,
@@ -54,4 +62,15 @@ export const Query = {
       }
     })
   },
+  transaction: (_: any, { transactionId }: TransactionId, { prisma }: Context) => {
+    return prisma.transaction.findFirst({
+      where: {
+        id: transactionId
+      },
+      include: {
+        category: true,
+        account: true,
+      }
+    })
+  }
 };

@@ -4,7 +4,8 @@ export const typeDefs = gql`
   type Query {
     accounts: [Account!]!,
     categories: [Category!]!,
-    transactions(filters: TransactionFilters): [Transaction!]!,
+    transaction(transactionId: String): Transaction
+    transactions(cursor: String, filters: TransactionFilters): [Transaction!]!,
   },
 
   type Account {
