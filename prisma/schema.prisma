@@ -9,3 +9,39 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Account {
+  id            String       @id @default(uuid())
+  name          String
+  transaction   Transaction[]
+}
+
+model Category {
+  id            String       @id @default(uuid())
+  name          String       @unique
+  color         String?
+  transaction   Transaction[]
+}
+
+model Transaction {
+  id         String   @unique //@id @default(uuid())
+  reference  String?
+  amount     String
+  currency   String?
+  date       DateTime @default(now())
+  
+
+  account    Account  @relation(fields: [accountId], references: [id])
+  accountId  String
+
+  category    Category?  @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+
+  @@index([accountId, date])
+
+}
+
+enum Currency {
+  GBP
+  USD
+}
