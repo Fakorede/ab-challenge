@@ -1,10 +1,14 @@
 import { Context } from './../index';
+import { Transaction, Prisma } from "@prisma/client";
 
 interface TransactionFiltersType {
   filters: {
     accountId?:  string
-    startDate:  string
-    endDate:    string
+    startDate:   string
+    endDate:     string
+    sortOrder:   string
+    take?:       number
+    cursor?:     number
   }
 }
 
@@ -32,7 +36,7 @@ export const Query = {
     })
   },
   transactions: (_: any, { filters }: TransactionFiltersType, { prisma }: Context) => {
-    let { accountId, startDate, endDate } = filters
+    let { accountId, startDate, endDate, sortOrder, take, cursor } = filters
 
     // if (cursor) {
     //   where.id < cursor
@@ -40,9 +44,9 @@ export const Query = {
 
     return prisma.transaction.findMany({
       take: 10,
-      // skip: 5,
+      // skip: 1,
       // cursor: {
-      //   id: myCursor,
+      //   id: String(cursor),
       // },
       where: {
         accountId: accountId ? accountId : undefined,
@@ -53,7 +57,7 @@ export const Query = {
       },
       orderBy: [
         {
-          id: "desc"
+          id: sortOrder as Prisma.SortOrder
         },
       ],
       include: {

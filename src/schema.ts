@@ -33,8 +33,9 @@ export const typeDefs = gql`
   }
 
   input TransactionFilters {
-    accountId:  String
-    startDate:  String
-    endDate:    String
+    accountId:    String
+    startDate:    String
+    endDate:      String
+    sortOrder:    String
   }
 `
