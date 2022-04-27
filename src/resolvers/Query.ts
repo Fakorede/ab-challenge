@@ -7,14 +7,27 @@ interface TransactionFiltersType {
     startDate:   string
     endDate:     string
     sortOrder:   string
-    take?:       number
-    cursor?:     number
+    take:       string
+    cursor?:     string
   }
 }
 
 interface TransactionId {
   transactionId: string
 }
+
+// async getCursorPaginationList(params: {
+//   take?: number;
+//   cursor?: Prisma.BookWhereUniqueInput;
+// }): Promise<Book[]> {
+//   const { take, cursor } = params;
+
+//   return this.dbService.book.findMany({
+//       take,
+//       skip: 1,
+//       cursor
+//   })
+// }
 
 export const Query = {
   accounts: (_: any, __:any, { prisma }: Context) => {
@@ -38,33 +51,55 @@ export const Query = {
   transactions: (_: any, { filters }: TransactionFiltersType, { prisma }: Context) => {
     let { accountId, startDate, endDate, sortOrder, take, cursor } = filters
 
-    // if (cursor) {
-    //   where.id < cursor
-    // }
+    let dbFetch
 
-    return prisma.transaction.findMany({
-      take: 10,
-      // skip: 1,
-      // cursor: {
-      //   id: String(cursor),
-      // },
-      where: {
-        accountId: accountId ? accountId : undefined,
-        date: {
-          gte: startDate ? new Date(startDate) : undefined,
-          lt:  endDate ? new Date(endDate) : undefined,
+    if (!cursor) {
+      dbFetch = prisma.transaction.findMany({
+        take: parseInt(take),
+        where: {
+          accountId: accountId ? accountId : undefined,
+          date: {
+            gte: startDate ? new Date(startDate) : undefined,
+            lt:  endDate ? new Date(endDate) : undefined,
+          },
         },
-      },
-      orderBy: [
-        {
-          id: sortOrder as Prisma.SortOrder
+        orderBy: [
+          {
+            id: sortOrder as Prisma.SortOrder
+          },
+        ],
+        include: {
+          category: true,
+          account: true,
+        }
+      })
+    } else {
+      dbFetch = prisma.transaction.findMany({
+        take: parseInt(take),
+        skip: 1,
+        cursor: {
+          id: cursor
         },
-      ],
-      include: {
-        category: true,
-        account: true,
-      }
-    })
+        where: {
+          accountId: accountId ? accountId : undefined,
+          date: {
+            gte: startDate ? new Date(startDate) : undefined,
+            lt:  endDate ? new Date(endDate) : undefined,
+          },
+        },
+        orderBy: [
+          {
+            id: sortOrder as Prisma.SortOrder
+          },
+        ],
+        include: {
+          category: true,
+          account: true,
+        }
+      })
+    }
+
+    return dbFetch
   },
   transaction: (_: any, { transactionId }: TransactionId, { prisma }: Context) => {
     return prisma.transaction.findFirst({

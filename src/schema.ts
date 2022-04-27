@@ -5,7 +5,7 @@ export const typeDefs = gql`
     accounts: [Account!]!,
     categories: [Category!]!,
     transaction(transactionId: String): Transaction
-    transactions(cursor: String, filters: TransactionFilters): [Transaction!]!,
+    transactions(filters: TransactionFilters): [Transaction!]!,
   },
 
   type Account {
@@ -37,5 +37,7 @@ export const typeDefs = gql`
     startDate:    String
     endDate:      String
     sortOrder:    String
+    take:         String
+    cursor:       String
   }
 `
