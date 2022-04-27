@@ -89,7 +89,7 @@ export const Query = {
         },
         orderBy: [
           {
-            id: sortOrder as Prisma.SortOrder
+            date: sortOrder as Prisma.SortOrder
           },
         ],
         include: {
